@@ -1,51 +1,51 @@
 import React from 'react'
+import Courses from './Components/Courses'
+// const Courses = ({courses}) =>{
+//   return(<>
+//       {courses.map((course) =><Course key = {course.id} course = {course}/>)}
+//   </>)
+// }
 
-const Courses = ({courses}) =>{
-  return(<>
-      {courses.map((course) =><Course key = {course.id} course = {course}/>)}
-  </>)
-}
+// const Course = ({course}) => {
+//   return(
+//     <>
+//     <Header course = {course.name}/>
+//     <Content parts = {course.parts} />
+//     <Total parts = {course.parts} />
+//     </>
+//   )
+// }
+// const Header = ({course}) => {
+//     return(
+//       <h1>{course}</h1>
+//     )  
+// }
 
-const Course = ({course}) => {
-  return(
-    <>
-    <Header course = {course.name}/>
-    <Content parts = {course.parts} />
-    <Total parts = {course.parts} />
-    </>
-  )
-}
-const Header = ({course}) => {
-    return(
-      <h1>{course}</h1>
-    )  
-}
+// const Content = ({parts}) =>{
+//     return (
+//       <div>
+//         {parts.map(part =>{
+//           return(
+//           <Part key = {part.id} name = {part.name} exercises = {part.exercises}/>
+//         )})}
+//       </div>
+//     )
+// }
 
-const Content = ({parts}) =>{
-    return (
-      <div>
-        {parts.map(part =>{
-          return(
-          <Part key = {part.id} name = {part.name} exercises = {part.exercises}/>
-        )})}
-      </div>
-    )
-}
-
-const Part = ({name,exercises}) =>{
-  return (
-    <>
-      <p>{name} {exercises}</p>
-    </>
-  )
-}
-const Total = ({parts}) => {
-  return (
-    <p>Number of exercises {parts.reduce((total,part)=>{
-      return total + part.exercises;
-    },0)}</p>
-  )
-}
+// const Part = ({name,exercises}) =>{
+//   return (
+//     <>
+//       <p>{name} {exercises}</p>
+//     </>
+//   )
+// }
+// const Total = ({parts}) => {
+//   return (
+//     <p>Number of exercises {parts.reduce((total,part)=>{
+//       return total + part.exercises;
+//     },0)}</p>
+//   )
+// }
 
 const App = () => {
   const courses = [
@@ -95,7 +95,6 @@ const App = () => {
   return (
     <>
       <Courses courses = {courses} />
-
     </>
   )
 }
