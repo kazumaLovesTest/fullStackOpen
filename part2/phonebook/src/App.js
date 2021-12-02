@@ -13,12 +13,19 @@ const App = () => {
   
   const addNewName = (e) =>{
     e.preventDefault();
-    const person = {
-      name:newName
+    if (persons.find(person=>person.name === newName))
+        alert(`${newName} already in PhoneBook`)
+    else if (newName === '')
+        alert("Your entry is empty")
+    else{
+      const person = {
+        name:newName
+      }
+      setPersons(persons.concat(person));
+      setNewName('');
     }
-    setPersons(persons.concat(person));
-    setNewName('');
   }
+
   const getNewName = (e) =>{
     setNewName(e.target.value)
   }
