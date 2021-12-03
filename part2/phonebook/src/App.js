@@ -1,5 +1,15 @@
 import React, { useState } from 'react'
 
+const Input = ({text,onChange,value}) => <div>{text} <input onChange = {onChange} value = {value}/> </div>
+const Form = ({onSubmit,getNewName,getNewNumber,newName,newNumber}) =>{
+  return(
+    <form onSubmit = {onSubmit}>
+      <Input onChange = {getNewName} value = {newName} text = "name:"/>
+      <Input onChange = {getNewNumber} value = {newNumber} text = "number"/>
+      <button type="submit">add</button>
+      </form>
+  )
+}
 const Contact = ({persons,filteredContact}) => {
   if (filteredContact === '')
   return(
@@ -60,19 +70,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      filter: <input onChange = {getFilteredContact} value = {filteredContact}/>
+      <Input onChange = {getFilteredContact} value = {filteredContact} text = "Show By:"/>
       <h2>Add Contacts</h2>
-      <form onSubmit = {addContact}>
-        <div>
-          name: <input onChange = {getNewName} value = {newName}/>
-        </div>
-        <div>
-          number: <input onChange = {getNewNumber} value = {newNumber}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form onSubmit = {addContact} getNewName = {getNewName} getNewNumber ={getNewNumber} newName ={newName} newNumber = {newNumber} />
       <h2>Numbers</h2>
       <Contact persons = {persons} filteredContact = {filteredContact} />
       ...
