@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react'
-import axios from 'axios'
+import services from './services/phoneNumbers'
 
+const Button = ({id,onClick}) => <button onClick = {()=>onClick(id)}>Delete</button>
 const Input = ({text,onChange,value}) => <div>{text} <input onChange = {onChange} value = {value}/> </div>
 const Form = ({onSubmit,getNewName,getNewNumber,newName,newNumber}) =>{
   return(
@@ -11,17 +12,31 @@ const Form = ({onSubmit,getNewName,getNewNumber,newName,newNumber}) =>{
       </form>
   )
 }
-const Contact = ({persons,filteredContact}) => {
+const Contact = ({persons,filteredContact,removeContact}) => {
   if (filteredContact === '')
   return(
      <> 
-      {persons.map(person=><li key = {person.id}>{person.name} {person.number}</li>)}
+      {persons.map(person=>{
+      return(
+        <div key = {person.id}>
+          <li >{person.name} {person.number}</li>
+          <Button onClick = {removeContact} id = {person.id} />
+      </div>
+      )
+    })}
     </>
     )
   else return(
     <>
     {persons.filter(person =>person.name.toLocaleLowerCase().includes(filteredContact.toLowerCase()))
-    .map(person=><li key = {person.id}>{person.name} {person.number}</li>)}
+    .map(person=>{
+      return(
+        <div key = {person.id}>
+          <li >{person.name} {person.number}</li>
+          <Button onClick = {removeContact} id = {person.id} />
+      </div>
+      )
+    })}
     </>
   )
 }
@@ -29,16 +44,15 @@ const Contact = ({persons,filteredContact}) => {
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('');
-  const [newNumber,SetNewNumber] = useState('');
+  const [newNumber,setNewNumber] = useState('');
   const [filteredContact,setFilter] = useState('');
   
   useEffect(()=>{
-      axios
-      .get('http://localhost:3001/persons')
-      .then(response =>{
-        const notes = response.data
-        setPersons(notes);
-      })
+    services.getAll().then(phoneNumbers =>{
+      console.log(phoneNumbers)
+      setPersons(phoneNumbers);
+    })
+    
   },[]) 
 
   const addContact = (e) =>{
@@ -52,22 +66,50 @@ const App = () => {
 
   const addName = () =>{
     if (persons.find(person=>person.name === newName))
+    {
+      if (persons.find(person=>person.number === newNumber))
         alert(`${newName} already in PhoneBook`)
+      else {
+        const contactToChange = persons.find(person=>person.name === newName)
+        const changedContact = {...contactToChange, number:newNumber}
+        changeNumber(changedContact)
+      }
+    }
+      
     else{
-      const person = {
+      const newPerson = {
         name:newName,
         number:newNumber,
-        id:persons.length +1
       }
-      setPersons(persons.concat(person));
-      setNewName('');
-      SetNewNumber('');
+      services.create(newPerson).then(sentPerson=>{
+        setPersons(persons.concat(sentPerson));
+        setNewName('');
+        setNewNumber('');
+      })
     }
   }
-
+  const changeNumber = (changedContact) =>{
+    services.update(changedContact)
+            .then(recievedContact =>{
+              setPersons(persons.map(person => person.id !== recievedContact.id
+                                                              ?person:recievedContact))
+              setNewName('');
+              setNewNumber('');
+            })
+  }
+  const removeContact = id => {
+    const makeSure = window.confirm("Are you sure you want to remove this contact?");
+    if(makeSure)
+      {
+        services.remove(id).then(phoneNumbers =>{
+          setPersons(phoneNumbers.filter(phoneNumber => (phoneNumber.id !== id)));
+        })
+     }
+  }
+  
   
   const getNewName = (e) => setNewName(e.target.value) 
-  const getNewNumber = (e) => SetNewNumber(e.target.value)
+  const getNewNumber = (e) => setNewNumber(e.target.value)
   const getFilteredContact = (e) => setFilter(e.target.value)
 
   return (
@@ -77,7 +119,7 @@ const App = () => {
       <h2>Add Contacts</h2>
       <Form onSubmit = {addContact} getNewName = {getNewName} getNewNumber ={getNewNumber} newName ={newName} newNumber = {newNumber} />
       <h2>Numbers</h2>
-      <Contact persons = {persons} filteredContact = {filteredContact} />
+      <Contact persons = {persons} filteredContact = {filteredContact} removeContact ={removeContact}/>
       ...
     </div>
   )
