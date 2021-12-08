@@ -1,9 +1,9 @@
 import React, { useState,useEffect } from 'react'
 import services from './services/phoneNumbers'
 
-const Notification = ({addedContact}) => {
-  if (addedContact === '')
-      return ''
+const Notification = ({notification}) => {
+  if (notification === '')
+      return null
   const notficationStyle = {
       background:"lightgrey",
       fontSize:24,
@@ -14,7 +14,7 @@ const Notification = ({addedContact}) => {
   }
   return(
     <>
-    <p style = {notficationStyle}>{`${addedContact.name} was added to your phonebook`}</p>
+    <p style = {notficationStyle}>{notification}</p>
     </>
   )
 }
@@ -63,7 +63,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber,setNewNumber] = useState('');
   const [filteredContact,setFilter] = useState('');
-  const [addedContact,setAddedContact] = useState('')
+  const [notification,setNotification] = useState('')
   useEffect(()=>{
     services.getAll().then(phoneNumbers =>{
       console.log(phoneNumbers)
@@ -102,18 +102,33 @@ const App = () => {
         setPersons(persons.concat(sentPerson));
         setNewName('');
         setNewNumber('');
-        setAddedContact(newPerson)
+        setNotification(`${newPerson.name} was added to your phonebook`)
+        setTimeout(()=>{
+          setNotification('')
+        },3000)
       })
     }
   }
   const changeNumber = (changedContact) =>{
     services.update(changedContact)
             .then(recievedContact =>{
-              setPersons(persons.map(person => person.id !== recievedContact.id
-                                                              ?person:recievedContact))
+              if (recievedContact === null){
+                setPersons(persons.filter(phoneNumber => (phoneNumber.id !== changedContact.id)));
+                setNotification(`${changedContact.name} was already delted from your phonebook`)
+                setTimeout(()=>{
+                  setNotification('')
+                },3000)
+              }
+              else{
+                setPersons(persons.map(person => person.id !== recievedContact.id
+                  ?person:recievedContact))
+                setNotification(`${recievedContact.name} was added to your phonebook`)
+                setTimeout(()=>{
+                setNotification('')
+                },3000)
+              }
               setNewName('');
               setNewNumber('');
-              setAddedContact(recievedContact)
             })
   }
   const removeContact = id => {
@@ -134,7 +149,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification addedContact = {addedContact} />
+      <Notification notification = {notification} />
       <Input onChange = {getFilteredContact} value = {filteredContact} text = "Show By:"/>
       <h2>Add Contacts</h2>
       <Form onSubmit = {addContact} getNewName = {getNewName} getNewNumber ={getNewNumber} newName ={newName} newNumber = {newNumber} />
