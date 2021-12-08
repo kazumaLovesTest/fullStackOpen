@@ -1,6 +1,23 @@
 import React, { useState,useEffect } from 'react'
 import services from './services/phoneNumbers'
 
+const Notification = ({addedContact}) => {
+  if (addedContact === '')
+      return ''
+  const notficationStyle = {
+      background:"lightgrey",
+      fontSize:24,
+      borderRadius:10,
+      border:'1px solid',
+      padding:20,
+      color:'green'
+  }
+  return(
+    <>
+    <p style = {notficationStyle}>{`${addedContact.name} was added to your phonebook`}</p>
+    </>
+  )
+}
 const Button = ({id,onClick}) => <button onClick = {()=>onClick(id)}>Delete</button>
 const Input = ({text,onChange,value}) => <div>{text} <input onChange = {onChange} value = {value}/> </div>
 const Form = ({onSubmit,getNewName,getNewNumber,newName,newNumber}) =>{
@@ -46,7 +63,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber,setNewNumber] = useState('');
   const [filteredContact,setFilter] = useState('');
-  
+  const [addedContact,setAddedContact] = useState('')
   useEffect(()=>{
     services.getAll().then(phoneNumbers =>{
       console.log(phoneNumbers)
@@ -85,6 +102,7 @@ const App = () => {
         setPersons(persons.concat(sentPerson));
         setNewName('');
         setNewNumber('');
+        setAddedContact(newPerson)
       })
     }
   }
@@ -95,6 +113,7 @@ const App = () => {
                                                               ?person:recievedContact))
               setNewName('');
               setNewNumber('');
+              setAddedContact(recievedContact)
             })
   }
   const removeContact = id => {
@@ -115,6 +134,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification addedContact = {addedContact} />
       <Input onChange = {getFilteredContact} value = {filteredContact} text = "Show By:"/>
       <h2>Add Contacts</h2>
       <Form onSubmit = {addContact} getNewName = {getNewName} getNewNumber ={getNewNumber} newName ={newName} newNumber = {newNumber} />
