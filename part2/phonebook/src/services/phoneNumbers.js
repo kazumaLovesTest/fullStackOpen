@@ -13,10 +13,6 @@ const create = newPerson => {
 const update = (changedContact) =>{
     return axios.put(`${baseUrl}/${changedContact.id}`,changedContact)
                 .then(response => response.data)
-                .catch(error =>{
-                    return null
-                })
-        
 }
 const remove = id => {
     axios.delete(`${baseUrl}/${id}`)
